@@ -17,8 +17,10 @@ public abstract class OAHashTable implements IHashTable {
 			if(table[j] == null){
 				return null;
 			}
-			else if(table[j].GetKey() == key){
-				return table[j];
+			else{
+				if(table[j].GetKey() == key){
+					return table[j];
+				}
 			}
 		}
 		return null;
@@ -26,17 +28,30 @@ public abstract class OAHashTable implements IHashTable {
 	
 	@Override
 	public void Insert(HashTableElement hte) throws TableIsFullException,KeyAlreadyExistsException {
+		int currIndex = -1;
 		int j;
 		int m = this.table.length;
 		long key = hte.GetKey();
 		for(int i = 0; i < m; i++){
 			j = this.Hash(key, i);
-			if(this.table[j].GetKey() == key){
-				throw new KeyAlreadyExistsException(hte);
+			if(this.table[j] == null){
+				this.table[j] = hte;
+				return;
 			}
-			if(this.table[j] == null || this.table[i].GetKey() < 0){
-				this.table[i] = hte;
+			else {
+				if(this.table[j].GetKey() == key) {
+					throw new KeyAlreadyExistsException(hte);
+				}
+				if (this.table[j].GetKey() < 0) {
+					if (currIndex < 0){
+						currIndex = j;
+					}
+				}
 			}
+		}
+		if (currIndex > 0){
+			this.table[currIndex] = hte;
+			return;
 		}
 		throw new TableIsFullException(hte);
 	}
@@ -47,10 +62,17 @@ public abstract class OAHashTable implements IHashTable {
 		int m = this.table.length;
 		for(int i = 0; i < m; i++){
 			j = Hash(key, i);
-			if(this.table[j] == null || this.table[j].GetKey() < 0){
+			if(this.table[j] == null){
 				throw new KeyDoesntExistException(key);
 			}
+			else {
+				if (this.table[j].GetKey() == key){
+					this.table[j] = new HashTableElement(-1,0);
+					return;
+				}
+			}
 		}
+		throw new KeyDoesntExistException(key);
 	}
 	
 	/**
@@ -60,4 +82,8 @@ public abstract class OAHashTable implements IHashTable {
 	 * @return the index into the hash table to place the key x
 	 */
 	public abstract int Hash(long x, int i);
+
+	public int getTableLenght(){
+		return this.table.length;
+	}
 }
