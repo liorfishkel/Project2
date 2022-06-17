@@ -35,11 +35,21 @@ public abstract class OAHashTable implements IHashTable {
 		for(int i = 0; i < m; i++){
 			j = this.Hash(key, i);
 			if(this.table[j] == null){
-				this.table[j] = hte;
-				return;
+				if (currIndex >= 0){
+					this.table[currIndex] = hte;
+					return;
+				}
+				else {
+					this.table[j] = hte;
+					return;
+				}
 			}
 			else {
 				if(this.table[j].GetKey() == key) {
+					if (currIndex >= 0){
+						this.table[currIndex] = this.table[j];
+						this.table[j] = new HashTableElement(-1,0);
+					}
 					throw new KeyAlreadyExistsException(hte);
 				}
 				if (this.table[j].GetKey() < 0) {
