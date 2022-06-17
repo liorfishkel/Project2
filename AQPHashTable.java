@@ -12,7 +12,14 @@ public class AQPHashTable extends OAHashTable {
 	@Override
 	public int Hash(long x, int i) {
 		// TODO implement hash function
-		int hash = this.hashFunc.Hash(x) + (int) Math.pow(-1,i) * (int) Math.pow(i,2);
+		int pow;
+		if (i % 2 == 0){
+			pow = 1;
+		}
+		else {
+			pow = -1;
+		}
+		int hash = this.hashFunc.Hash(x) + pow * (int) Math.pow(i,2);
 		hash = hash % this.getTableLenght();
 		if (hash < 0){
 			hash += this.getTableLenght();
